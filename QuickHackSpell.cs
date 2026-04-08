@@ -1,6 +1,6 @@
-﻿
-using AliLib.Core;
+﻿using AliLib.Core;
 using AliLib.Core.Abilities;
+using QuickHack.Abilities;
 using System.Collections.Generic;
 
 namespace QuickHack;
@@ -88,7 +88,8 @@ public class QuickHackSpell : AbilitySpell
     {
         return new List<Ability>
         {
-            new QuickHackEffectsAbility(this)
+            new QuickHackEffectsAbility(this),
+            new QuickHackLogicAbility(this)
         };
     }
 }

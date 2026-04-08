@@ -1,7 +1,7 @@
 ﻿using AliLib.Core.Abilities;
 using UnityEngine;
 
-namespace QuickHack;
+namespace QuickHack.Abilities;
 
 /// <summary>
 /// Handles the VFX of the Quick Hack spell.
