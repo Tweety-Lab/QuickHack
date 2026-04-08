@@ -8,7 +8,7 @@ using UnityEngine.Rendering.Universal;
 namespace QuickHack.Abilities;
 
 /// <summary>
-/// Handles the VFX of the Quick Hack spell.
+/// Handles the VFX (Everything visual + non-logical) of the Quick Hack spell.
 /// </summary>
 public class QuickHackEffectsAbility : Ability
 {
@@ -18,9 +18,14 @@ public class QuickHackEffectsAbility : Ability
     /// <summary> The Post Process Volume effects are applied to. </summary>
     public Volume PostProcessVolume { get; set; }
 
-    [ModOption] [ModOptionSlider] [ModOptionFloatValues(0f, 1f, 0.05f)] public static float HackModeColorR = 0.35f;
-    [ModOption] [ModOptionSlider] [ModOptionFloatValues(0f, 1f, 0.05f)] public static float HackModeColorG = 0.7f;
-    [ModOption] [ModOptionSlider] [ModOptionFloatValues(0f, 1f, 0.05f)] public static float HackModeColorB = 0.35f;
+    [ModOption(interactionType = ModOption.InteractionType.Slider)] [ModOptionCategory("Effects", 1)] [ModOptionFloatValues(0f, 1f, 0.05f)] 
+    public static float HackModeColorR = 0.35f;
+
+    [ModOption(interactionType = ModOption.InteractionType.Slider)] [ModOptionCategory("Effects", 2)] [ModOptionFloatValues(0f, 1f, 0.05f)]
+    public static float HackModeColorG = 0.7f;
+
+    [ModOption(interactionType = ModOption.InteractionType.Slider)] [ModOptionCategory("Effects", 3)] [ModOptionFloatValues(0f, 1f, 0.05f)]
+    public static float HackModeColorB = 0.35f;
 
     /// <summary> The color to tint the screen when in Hack Mode. </summary>
     public Color HackModeColor => new Color(HackModeColorR, HackModeColorG, HackModeColorB);
@@ -42,12 +47,15 @@ public class QuickHackEffectsAbility : Ability
         base.Unload();
 
         Spell.OnStartCast -= StartCast;
+        Spell.OnStopCast -= StopCast;
+
+        StopCast();
     }
 
     public void StartCast()
     {
         if (PostProcessVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
-            CoroutineRunner.Instance.PlaySmooth(t => colorAdjustments.colorFilter.Override(Color.Lerp(Color.white, HackModeColor, t)), duration: 0.5f);
+            CoroutineRunner.Instance.PlaySmooth(t => colorAdjustments.colorFilter.Override(Color.Lerp(Color.white, HackModeColor, t)), duration: 0.25f * QuickHackLogicAbility.TimeScale);
     }
 
     public void StopCast()
@@ -57,7 +65,7 @@ public class QuickHackEffectsAbility : Ability
         if (PostProcessVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
         {
             Color from = colorAdjustments.colorFilter.value;
-            CoroutineRunner.Instance.PlaySmooth(t => colorAdjustments.colorFilter.Override(Color.Lerp(from, Color.white, t)), duration: 0.5f);
+            CoroutineRunner.Instance.PlaySmooth(t => colorAdjustments.colorFilter.Override(Color.Lerp(from, Color.white, t)), duration: 0.25f);
         }
     }
 }
