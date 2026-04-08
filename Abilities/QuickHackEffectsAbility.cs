@@ -1,5 +1,9 @@
-﻿using AliLib.Core.Abilities;
+﻿using AliLib.Core;
+using AliLib.Core.Abilities;
+using ThunderRoad;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace QuickHack.Abilities;
 
@@ -10,13 +14,26 @@ public class QuickHackEffectsAbility : Ability
 {
     /// <inheritdoc/>
     public QuickHackEffectsAbility(AbilitySpell spell) : base(spell) { }
+    
+    /// <summary> The Post Process Volume effects are applied to. </summary>
+    public Volume PostProcessVolume { get; set; }
+
+    [ModOption] [ModOptionSlider] [ModOptionFloatValues(0f, 1f, 0.05f)] public static float HackModeColorR = 0.35f;
+    [ModOption] [ModOptionSlider] [ModOptionFloatValues(0f, 1f, 0.05f)] public static float HackModeColorG = 0.7f;
+    [ModOption] [ModOptionSlider] [ModOptionFloatValues(0f, 1f, 0.05f)] public static float HackModeColorB = 0.35f;
+
+    /// <summary> The color to tint the screen when in Hack Mode. </summary>
+    public Color HackModeColor => new Color(HackModeColorR, HackModeColorG, HackModeColorB);
 
     /// <inheritdoc/>
     public override void Load()
     {
         base.Load();
 
+        PostProcessVolume = GameObject.FindAnyObjectByType<Volume>();
+
         Spell.OnStartCast += StartCast;
+        Spell.OnStopCast += StopCast;
     }
 
     /// <inheritdoc/>
@@ -29,6 +46,18 @@ public class QuickHackEffectsAbility : Ability
 
     public void StartCast()
     {
-        Debug.Log("Quick Hack VFX");
+        if (PostProcessVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
+            CoroutineRunner.Instance.PlaySmooth(t => colorAdjustments.colorFilter.Override(Color.Lerp(Color.white, HackModeColor, t)), duration: 0.5f);
+    }
+
+    public void StopCast()
+    {
+        // TODO: AliLib needs a way of stopping specific coroutines
+        CoroutineRunner.Instance.StopAllCoroutines();
+        if (PostProcessVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
+        {
+            Color from = colorAdjustments.colorFilter.value;
+            CoroutineRunner.Instance.PlaySmooth(t => colorAdjustments.colorFilter.Override(Color.Lerp(from, Color.white, t)), duration: 0.5f);
+        }
     }
 }
