@@ -83,6 +83,7 @@ public class QuickHackSpell : AbilitySpell
         }
         """;
     #endregion
+
     /// <inheritdoc/>
     public override List<Ability> RegisterAbilities()
     {
