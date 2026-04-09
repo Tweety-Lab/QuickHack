@@ -1,4 +1,5 @@
 ﻿using AliLib.Core.Abilities;
+using AliLib.Core.Events;
 using QuickHack.Hacks;
 using System.Collections.Generic;
 using ThunderRoad;
@@ -19,6 +20,9 @@ public class QuickHackLogicAbility : Ability
 
     /// <summary> The currently selected Quick Hack. </summary>
     public BaseQuickHack? SelectedQuickHack { get; set; }
+
+    /// <summary> Called when a new Quick Hack is selected. </summary>
+    public static ModEvent<(BaseQuickHack QuickHack, GameObject Target)> OnQuickHackSelected { get; set; } = new();
 
     /// <summary> All registered Quick Hacks. </summary>
     public List<BaseQuickHack> RegisteredQuickHacks { get; set; } = new()
@@ -59,18 +63,28 @@ public class QuickHackLogicAbility : Ability
 
         Ray ray = new Ray(origin, forward);
         if (Physics.Raycast(ray, out RaycastHit hit, 100.0f))
+        {
             foreach (BaseQuickHack qh in RegisteredQuickHacks)
-                if (qh.CanHack(hit.collider.gameObject))
+                if (qh.CanHack(hit.collider.gameObject) && (qh != SelectedQuickHack || hit.collider.gameObject != Target))
                 {
                     SelectedQuickHack = qh;
                     Target = hit.collider.gameObject;
+
+                    OnQuickHackSelected.Invoke((qh, hit.collider.gameObject));
                     break;
                 }
+        } else
+        {
+            SelectedQuickHack = null;
+            Target = null;
+        }
     }
 
     public void StartCast()
     {
         Debug.Log("Quick Hack Logic");
+
+        OnQuickHackSelected += (info) => Debug.Log($"Selected {info.QuickHack.GetType().Name} on {info.Target.name}");
 
         TimeManager.SetTimeScale(TimeScale);
     }
