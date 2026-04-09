@@ -50,7 +50,7 @@ public class QuickHackSpell : AbilitySpell
           "wheelDisplayName": "Quick Hack",
           "hasOrder": true,
           "order": 0,
-          "iconEffectId": "SpellOrbLightning",
+          "iconEffectId": "SpellOrbQuickHack",
           "loopMaxDuration": 5.0,
           "minMana": 0.0,
           "meshAddress": "Bas.Mesh.SkillTree.TierCrystal.Fire.T1",
