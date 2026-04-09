@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ThunderRoad;
+﻿using ThunderRoad;
+using ThunderRoad.Skill.Spell;
+using UnityEngine;
 
 namespace QuickHack.Hacks.Default;
+
 
 public class OverheatQuickHack : ComponentQuickHack<Creature>
 {
@@ -16,9 +16,7 @@ public class OverheatQuickHack : ComponentQuickHack<Creature>
     /// <inheritdoc/>
     public override void Hack(Creature target)
     {
-        Burning burning = new Burning();
-
-        target.Statuses.Add(burning);
-        burning.Ignite();
+        StatusDataBurning burningData = Catalog.GetData<StatusDataBurning>("Burning");
+        target.Inflict(burningData, this, float.PositiveInfinity, burningData.maxHeat);
     }
 }
