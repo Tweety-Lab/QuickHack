@@ -1,6 +1,7 @@
 ﻿using AliLib.Core.Abilities;
 using AliLib.Core.Events;
 using QuickHack.Hacks;
+using QuickHack.Hacks.Default;
 using System.Collections.Generic;
 using ThunderRoad;
 using UnityEngine;
@@ -27,8 +28,8 @@ public class QuickHackLogicAbility : Ability
     /// <summary> All registered Quick Hacks. </summary>
     public List<BaseQuickHack> RegisteredQuickHacks { get; set; } = new()
     {
-        new DebugQuickHack(),
-        new BreakQuickHack()
+        new BreakQuickHack(),
+        new OverheatQuickHack()
     };
 
     /// <inheritdoc/>
