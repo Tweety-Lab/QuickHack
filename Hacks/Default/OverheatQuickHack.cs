@@ -1,6 +1,4 @@
 ﻿using ThunderRoad;
-using ThunderRoad.Skill.Spell;
-using UnityEngine;
 
 namespace QuickHack.Hacks.Default;
 

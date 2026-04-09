@@ -2,6 +2,7 @@
 using AliLib.Core.Events;
 using QuickHack.Hacks;
 using QuickHack.Hacks.Default;
+using System;
 using System.Collections.Generic;
 using ThunderRoad;
 using UnityEngine;
@@ -25,12 +26,15 @@ public class QuickHackLogicAbility : Ability
     /// <summary> Called when a new Quick Hack is selected. </summary>
     public static ModEvent<(BaseQuickHack QuickHack, GameObject Target)> OnQuickHackSelected { get; set; } = new();
 
-    /// <summary> All registered Quick Hacks. </summary>
-    public List<BaseQuickHack> RegisteredQuickHacks { get; set; } = new()
+    /// <summary> The types of every available Quick Hack. </summary>
+    /// <remarks> We store a list of types instead of instances so third party mods can register their own Quick Hacks. </remarks>
+    public static List<Type> RegisteredQuickHackTypes { get; set; } = new()
     {
-        new BreakQuickHack(),
-        new OverheatQuickHack()
+        typeof(BreakQuickHack),
+        typeof(OverheatQuickHack)
     };
+
+    private List<BaseQuickHack> quickHackInstances = new List<BaseQuickHack>();
 
     /// <inheritdoc/>
     public QuickHackLogicAbility(AbilitySpell spell) : base(spell) { }
@@ -39,6 +43,9 @@ public class QuickHackLogicAbility : Ability
     public override void Load()
     {
         base.Load();
+
+        foreach (Type type in RegisteredQuickHackTypes)
+            quickHackInstances.Add((BaseQuickHack)Activator.CreateInstance(type)!);
 
         Spell.OnUpdateCast += UpdateCast;
         Spell.OnStartCast += StartCast;
@@ -49,6 +56,8 @@ public class QuickHackLogicAbility : Ability
     public override void Unload()
     {
         base.Unload();
+
+        quickHackInstances.Clear();
 
         Spell.OnUpdateCast -= UpdateCast;
         Spell.OnStartCast -= StartCast;
@@ -65,7 +74,7 @@ public class QuickHackLogicAbility : Ability
         Ray ray = new Ray(origin, forward);
         if (Physics.Raycast(ray, out RaycastHit hit, 100.0f))
         {
-            foreach (BaseQuickHack qh in RegisteredQuickHacks)
+            foreach (BaseQuickHack qh in quickHackInstances)
                 if (qh.CanHack(hit.collider.gameObject) && (qh != SelectedQuickHack || hit.collider.gameObject != Target))
                 {
                     SelectedQuickHack = qh;
