@@ -28,7 +28,7 @@ public class QuickHackEffectsAbility : Ability
     public static float HackModeColorB = 0.35f;
 
     /// <summary> The color to tint the screen when in Hack Mode. </summary>
-    public Color HackModeColor => new Color(HackModeColorR, HackModeColorG, HackModeColorB);
+    public static Color HackModeColor => new Color(HackModeColorR, HackModeColorG, HackModeColorB);
 
     /// <inheritdoc/>
     public override void Load()
