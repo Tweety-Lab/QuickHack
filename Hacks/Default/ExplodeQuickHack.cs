@@ -12,6 +12,9 @@ public class ExplodeQuickHack : ComponentQuickHack<Item>
     public override string Name { get; } = "Explode";
 
     /// <inheritdoc/>
+    public override string Icon { get; } = "QuickHack.Icons.Explode";
+
+    /// <inheritdoc/>
     public override bool CanHack(Item target) => target.breakable != null && target.breakable.canBreak;
 
     /// <inheritdoc/>

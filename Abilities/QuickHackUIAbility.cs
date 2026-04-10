@@ -31,6 +31,12 @@ public class QuickHackUIAbility : Ability
     {
         GameObject? instance = GameObject.Instantiate(RedBackground);
 
+        Catalog.LoadAssetAsync<Material>(info.QuickHack.Icon, (mat) =>
+        {
+            mat?.SetColor("_Tint", new Color(1.0f, 0.3725f, 0.3725f));
+            instance?.transform.Find("Icon").GetComponent<MeshRenderer>().material = mat;
+        }, "QuickHack");
+
         // HACK: Ideally our billboard shader would handle rotation but since it doesn't we use a coroutine for positions instead of parenting
         if (info.Target.TryGetComponent<Creature>(out Creature creature))
             CoroutineRunner.Instance.StartCoroutine(FollowPosition(instance!.transform, creature.ragdoll.GetPart(RagdollPart.Type.Torso).transform));

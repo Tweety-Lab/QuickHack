@@ -13,6 +13,9 @@ public abstract class BaseQuickHack
     /// <summary> The name of this Quick Hack that appears in UI. </summary>
     public abstract string Name { get; }
 
+    /// <summary> The address to the icon used for this Quick Hack. </summary>
+    public virtual string Icon { get; } = "QuickHack.Icons.Default";
+
     /// <summary> Determine if this Quick Hack can be applied to a target. </summary>
     public abstract bool CanHack(GameObject target);
 
