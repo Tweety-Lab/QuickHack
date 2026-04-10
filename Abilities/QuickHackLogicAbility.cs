@@ -19,6 +19,12 @@ public class QuickHackLogicAbility : Ability
     [ModOption] [ModOptionCategory("Quick Hack", 1)] [ModOptionFloatValues(0f, 1f, 0.1f)]
     public static float TimeScale = 0.1f;
 
+    /// <summary> Called when a new Quick Hack is selected. </summary>
+    public ModEvent<(BaseQuickHack QuickHack, GameObject Target)> OnQuickHackSelected { get; set; } = new();
+
+    /// <summary> Called when a Quick Hack is used. </summary>
+    public ModEvent<(BaseQuickHack QuickHack, GameObject Target)> OnQuickHackUsed { get; set; } = new();
+
     /// <summary> The currently targeted object. </summary>
     public GameObject? Target { get; set; }
 
@@ -30,9 +36,6 @@ public class QuickHackLogicAbility : Ability
 
     /// <summary> The currently selected Quick Hack. </summary>
     public BaseQuickHack? SelectedQuickHack => AvailableQuickHacks.Count > 0 ? AvailableQuickHacks[SelectedQuickHackIndex] : null;
-
-    /// <summary> Called when a new Quick Hack is selected. </summary>
-    public static ModEvent<(BaseQuickHack QuickHack, GameObject Target)> OnQuickHackSelected { get; set; } = new();
 
     /// <summary> The types of every available Quick Hack. </summary>
     /// <remarks> We store a list of types instead of instances so third party mods can register their own Quick Hacks. </remarks>
@@ -144,7 +147,10 @@ public class QuickHackLogicAbility : Ability
         TimeManager.SetTimeScale(1.0f);
 
         if (SelectedQuickHack != null && Target != null)
+        {
             SelectedQuickHack.Hack(Target);
+            OnQuickHackUsed.Invoke((SelectedQuickHack, Target));
+        }
 
         SelectedQuickHackIndex = -1;
         Target = null;

@@ -90,7 +90,8 @@ public class QuickHackSpell : AbilitySpell
         return new List<Ability>
         {
             new QuickHackEffectsAbility(this),
-            new QuickHackLogicAbility(this)
+            new QuickHackLogicAbility(this),
+            new QuickHackUIAbility(this)
         };
     }
 }

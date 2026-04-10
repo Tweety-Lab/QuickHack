@@ -11,8 +11,8 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AliLib.Analyzer" Version="0.2.3" />
-    <PackageReference Include="AliLib.Core" Version="0.2.1" />
+    <PackageReference Include="AliLib.Analyzer" Version="0.2.4" />
+    <PackageReference Include="AliLib.Core" Version="0.2.4" />
   </ItemGroup>
 
 	<ItemGroup>

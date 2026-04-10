@@ -61,7 +61,6 @@ public class QuickHackEffectsAbility : Ability
     public void StopCast()
     {
         // TODO: AliLib needs a way of stopping specific coroutines
-        CoroutineRunner.Instance.StopAllCoroutines();
         if (PostProcessVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
         {
             Color from = colorAdjustments.colorFilter.value;
