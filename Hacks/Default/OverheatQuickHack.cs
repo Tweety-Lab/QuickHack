@@ -9,6 +9,9 @@ public class OverheatQuickHack : ComponentQuickHack<Creature>
     public override string Name { get; } = "Overheat";
 
     /// <inheritdoc/>
+    public override string Icon { get; } = "QuickHack.Icons.Overheat";
+
+    /// <inheritdoc/>
     public override bool CanHack(Creature target) => !target.isPlayer;
 
     /// <inheritdoc/>
