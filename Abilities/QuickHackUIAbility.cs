@@ -31,7 +31,9 @@ public class QuickHackUIAbility : Ability
          Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackUsed += OnQuickHackUsed;
     }
 
-    private void OnQuickHackUsed((BaseQuickHack QuickHack, GameObject Target) info)
+    private void OnQuickHackUsed((BaseQuickHack QuickHack, GameObject Target) info) => SpawnQuickHackIcon(info.QuickHack.Icon, info.Target);
+
+    public void SpawnQuickHackIcon(string iconAddress, GameObject target)
     {
         GameObject? instance = GameObject.Instantiate(RedBackground);
 
@@ -43,14 +45,14 @@ public class QuickHackUIAbility : Ability
             matInstance.SetColor("_Tint", new Color(1.0f, 0.3725f, 0.3725f));
             instance?.transform.Find("Icon").GetComponent<MeshRenderer>().material = matInstance;
 
-            Catalog.LoadAssetAsync<Texture2D>(info.QuickHack.Icon, (text) => matInstance.SetTexture("_Sprite", text), "QuickHack");
+            Catalog.LoadAssetAsync<Texture2D>(iconAddress, (text) => matInstance.SetTexture("_Sprite", text), "QuickHack");
         }
 
         // HACK: Ideally our billboard shader would handle rotation but since it doesn't we use a coroutine for positions instead of parenting
-        if (info.Target.TryGetComponent<Creature>(out Creature creature))
+        if (target.TryGetComponent<Creature>(out Creature creature))
             CoroutineRunner.Instance.StartCoroutine(FollowPosition(instance!.transform, creature.ragdoll.GetPart(RagdollPart.Type.Torso).transform));
         else
-            CoroutineRunner.Instance.StartCoroutine(FollowPosition(instance!.transform, info.Target.transform));
+            CoroutineRunner.Instance.StartCoroutine(FollowPosition(instance!.transform, target.transform));
 
         CoroutineRunner.Instance.PlayAfterDelay(() => GameObject.Destroy(instance), 3f);
     }
