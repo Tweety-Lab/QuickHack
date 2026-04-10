@@ -16,8 +16,12 @@ public class QuickHackUIAbility : Ability
     [Addressable("QuickHack.HackBackground.Red")]
     public static GameObject? RedBackground { get; set; }
 
+    [Addressable("QuickHack.Icons.BaseMat")]
+    public static Material? BaseIconMaterial { get; set; }
+
     /// <inheritdoc/>
     public QuickHackUIAbility(AbilitySpell spell) : base(spell) { }
+
 
     /// <inheritdoc/>
     public override void Load()
@@ -31,11 +35,16 @@ public class QuickHackUIAbility : Ability
     {
         GameObject? instance = GameObject.Instantiate(RedBackground);
 
-        Catalog.LoadAssetAsync<Material>(info.QuickHack.Icon, (mat) =>
+        if (BaseIconMaterial != null)
         {
-            mat?.SetColor("_Tint", new Color(1.0f, 0.3725f, 0.3725f));
-            instance?.transform.Find("Icon").GetComponent<MeshRenderer>().material = mat;
-        }, "QuickHack");
+            // TODO: Does this material properly get disposed?
+            Material matInstance = GameObject.Instantiate(BaseIconMaterial);
+
+            matInstance.SetColor("_Tint", new Color(1.0f, 0.3725f, 0.3725f));
+            instance?.transform.Find("Icon").GetComponent<MeshRenderer>().material = matInstance;
+
+            Catalog.LoadAssetAsync<Texture2D>(info.QuickHack.Icon, (text) => matInstance.SetTexture("_Sprite", text), "QuickHack");
+        }
 
         // HACK: Ideally our billboard shader would handle rotation but since it doesn't we use a coroutine for positions instead of parenting
         if (info.Target.TryGetComponent<Creature>(out Creature creature))
