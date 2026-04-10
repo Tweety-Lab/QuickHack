@@ -4,7 +4,7 @@ using UnityEngine;
 namespace QuickHack.Hacks.Default;
 
 /// <summary>
-/// Explode a breakable object.
+/// Destroy a breakable object.
 /// </summary>
 public class BreakQuickHack : ComponentQuickHack<Item>
 {

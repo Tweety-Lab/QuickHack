@@ -11,7 +11,7 @@ public abstract class ComponentQuickHack<T> : BaseQuickHack where T : MonoBehavi
     /// <inheritdoc/>
     public override bool CanHack(GameObject target)
     {
-        T? component = target.GetComponentInParent<T>();
+        T? component = target.GetComponent<T>() ?? target.GetComponentInParent<T>();
         return component != null;
     }
 
