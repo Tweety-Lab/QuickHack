@@ -48,7 +48,8 @@ public class QuickHackLogicAbility : Ability
         typeof(ExplodeQuickHack),
         typeof(OverheatQuickHack),
         typeof(ShortCircuitQuickHack),
-        typeof(CrippleMovementQuickHack)
+        typeof(CrippleMovementQuickHack),
+        typeof(CyberpsychosisQuickHack)
     };
 
     private List<BaseQuickHack> quickHackInstances = new List<BaseQuickHack>();
