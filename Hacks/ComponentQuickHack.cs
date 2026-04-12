@@ -16,7 +16,11 @@ public abstract class ComponentQuickHack<T> : BaseQuickHack where T : MonoBehavi
     }
 
     /// <inheritdoc/>
-    public override void Hack(GameObject target) => Hack(target.GetComponentInParent<T>());
+    public override void Hack(GameObject target)
+    {
+        T component = target.GetComponent<T>() ?? target.GetComponentInParent<T>();
+        Hack(component);
+    }
 
     /// <summary> Apply the Quick Hack to the <typeparamref name="T"/>. </summary>
     public abstract void Hack(T target);

@@ -136,10 +136,7 @@ public class QuickHackLogicAbility : Ability
 
     public void StartCast() 
     {
-        Debug.Log("Quick Hack Logic");
-
         Spell.OnUpdateCast += UpdateCast;
-        OnQuickHackSelected += DebugLog;
 
         TimeManager.SetTimeScale(TimeScale);
     }
@@ -148,7 +145,6 @@ public class QuickHackLogicAbility : Ability
     {
         // HACK
         Spell.OnUpdateCast -= UpdateCast;
-        OnQuickHackSelected -= DebugLog;
 
         TimeManager.SetTimeScale(1.0f);
 
@@ -162,6 +158,4 @@ public class QuickHackLogicAbility : Ability
         Target = null;
         AvailableQuickHacks.Clear();
     }
-
-    private void DebugLog((BaseQuickHack QuickHack, GameObject Target) info) => Debug.Log($"Selected {info.QuickHack.Name} on {info.Target.name}");
 }

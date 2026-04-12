@@ -49,7 +49,6 @@ public class QuickHackUISelectionAbility : Ability
 
         void OnTargetSelected(GameObject target)
         {
-            Debug.Log($"Populating selection menu for {target.name}");
             menu.Entries.Clear();
 
             foreach (BaseQuickHack qh in logic.AvailableQuickHacks)
