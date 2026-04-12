@@ -91,7 +91,8 @@ public class QuickHackSpell : AbilitySpell
         {
             new QuickHackEffectsAbility(this),
             new QuickHackLogicAbility(this),
-            new QuickHackUIAbility(this)
+            new QuickHackUIIndicatorAbility(this),
+            new QuickHackUISelectionAbility(this),
         };
     }
 }

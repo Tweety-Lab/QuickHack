@@ -9,9 +9,9 @@ using UnityEngine;
 namespace QuickHack.Abilities;
 
 /// <summary>
-/// Handles the UI of the Quick Hack spell.
+/// Handles the red indicator that appears after using a quickhack.
 /// </summary>
-public class QuickHackUIAbility : Ability
+public class QuickHackUIIndicatorAbility : Ability
 {
     [Addressable("QuickHack.HackBackground.Red")]
     public static GameObject? RedBackground { get; set; }
@@ -20,7 +20,7 @@ public class QuickHackUIAbility : Ability
     public static Material? BaseIconMaterial { get; set; }
 
     /// <inheritdoc/>
-    public QuickHackUIAbility(AbilitySpell spell) : base(spell) { }
+    public QuickHackUIIndicatorAbility(AbilitySpell spell) : base(spell) { }
 
 
     /// <inheritdoc/>
@@ -50,7 +50,7 @@ public class QuickHackUIAbility : Ability
 
         // HACK: Ideally our billboard shader would handle rotation but since it doesn't we use a coroutine for positions instead of parenting
         if (target.TryGetComponent<Creature>(out Creature creature))
-            CoroutineRunner.Instance.StartCoroutine(FollowPosition(instance!.transform, creature.ragdoll.GetPart(RagdollPart.Type.Torso).transform));
+            CoroutineRunner.Instance.StartCoroutine(FollowPosition(instance!.transform, creature.ragdoll.GetPart(RagdollPart.Type.Torso).transform, new Vector3(-0.5f, 0, 0)));
         else
             CoroutineRunner.Instance.StartCoroutine(FollowPosition(instance!.transform, target.transform));
 
@@ -61,7 +61,7 @@ public class QuickHackUIAbility : Ability
     {
         while (follower != null && target != null)
         {
-            follower.position = target.position + localOffset;
+            follower.position = target.TransformPoint(localOffset);
             follower.rotation = Quaternion.identity;
             yield return null;
         }

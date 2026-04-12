@@ -19,6 +19,9 @@ public class QuickHackLogicAbility : Ability
     [ModOption] [ModOptionCategory("Quick Hack", 1)] [ModOptionFloatValues(0f, 1f, 0.1f)]
     public static float TimeScale = 0.1f;
 
+    /// <summary> Called when a new target is selected. </summary>
+    public ModEvent<GameObject> OnQuickHackTargetSelected { get; set; } = new();
+
     /// <summary> Called when a new Quick Hack is selected. </summary>
     public ModEvent<(BaseQuickHack QuickHack, GameObject Target)> OnQuickHackSelected { get; set; } = new();
 
@@ -101,6 +104,8 @@ public class QuickHackLogicAbility : Ability
                 Target = logicalTarget;
                 SelectedQuickHackIndex = 0;
 
+                OnQuickHackTargetSelected?.Invoke(Target);
+
                 if (AvailableQuickHacks.Count > 0)
                     OnQuickHackSelected?.Invoke((SelectedQuickHack!, Target));
             }
@@ -113,15 +118,15 @@ public class QuickHackLogicAbility : Ability
 
         // QH Selection Logic
 #if DEBUG
-        if (Keyboard.current.downArrowKey.wasPressedThisFrame && AvailableQuickHacks.Count > 0 && Target != null)
+        if (Keyboard.current.wKey.wasPressedThisFrame && AvailableQuickHacks.Count > 0 && Target != null)
         {
-            SelectedQuickHackIndex = Mathf.Clamp(SelectedQuickHackIndex + 1, 0, AvailableQuickHacks.Count - 1);
+            SelectedQuickHackIndex = Mathf.Clamp(SelectedQuickHackIndex - 1, 0, AvailableQuickHacks.Count - 1);
             OnQuickHackSelected?.Invoke((SelectedQuickHack!, Target));
         }
 
-        if (Keyboard.current.upArrowKey.wasPressedThisFrame && AvailableQuickHacks.Count > 0 && Target != null)
+        if (Keyboard.current.sKey.wasPressedThisFrame && AvailableQuickHacks.Count > 0 && Target != null)
         {
-            SelectedQuickHackIndex = Mathf.Clamp(SelectedQuickHackIndex - 1, 0, AvailableQuickHacks.Count - 1);
+            SelectedQuickHackIndex = Mathf.Clamp(SelectedQuickHackIndex + 1, 0, AvailableQuickHacks.Count - 1);
             OnQuickHackSelected?.Invoke((SelectedQuickHack!, Target));
         }
 #endif

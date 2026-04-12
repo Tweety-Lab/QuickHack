@@ -28,6 +28,9 @@
 		<Reference Include="Unity.RenderPipelines.Universal.Runtime">
 		  <HintPath>..\..\Managed\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
 		</Reference>
+		<Reference Include="Unity.TextMeshPro">
+		  <HintPath>..\..\Managed\Unity.TextMeshPro.dll</HintPath>
+		</Reference>
 
 		<Reference Include="UnityEngine">
 			<HintPath>..\..\Managed\UnityEngine.dll</HintPath>
