@@ -37,6 +37,8 @@ public class QuickHackUISelectionAbility : Ability
         if (instance == null)
             return;
 
+        instance.layer = (int)ThunderRoad.LayerName.UI;
+
         instance.transform.position = Spell.spellCaster.ragdollHand.ragdoll.headPart.transform.position;
 
         QuickHackLogicAbility? logic = Spell.GetAbility<QuickHackLogicAbility>();

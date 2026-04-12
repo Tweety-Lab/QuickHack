@@ -12,7 +12,7 @@ public class BreakQuickHack : ComponentQuickHack<Item>
     public override string Name { get; } = "Break";
 
     /// <inheritdoc/>
-    public override bool CanHack(Item target) => target.breakable != null && target.breakable.canBreak && !target.breakable.IsBroken;
+    public override bool CanHack(Item target) => target.breakable != null && target.breakable.CanBeBroken() && !target.breakable.IsBroken;
 
     /// <inheritdoc/>
     public override void Hack(Item target) => target.breakable.Explode(target.totalCombinedMass, target.Center, 1f, 0f, ForceMode.Impulse);
