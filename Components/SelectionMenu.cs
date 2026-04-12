@@ -2,6 +2,7 @@
 using UnityEngine;
 using TMPro;
 using ThunderRoad;
+using QuickHack.Abilities;
 
 namespace QuickHack.Components;
 
@@ -12,9 +13,24 @@ public class SelectionMenu : MonoBehaviour
 {
     public class QuickHackInfo
     {
-        public string Name {  get; set; }
-        public string IconAddress { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string IconAddress { get; set; } = string.Empty;
     }
+
+    [ModOption(interactionType = ModOption.InteractionType.Slider)]
+    [ModOptionCategory("UI", 2)]
+    [ModOptionFloatValues(0f, 1f, 0.05f)]
+    public static float HighlightColorR = 0.40f;
+
+    [ModOption(interactionType = ModOption.InteractionType.Slider)]
+    [ModOptionCategory("UI", 2)]
+    [ModOptionFloatValues(0f, 1f, 0.05f)]
+    public static float HighlightColorG = 0.75f;
+
+    [ModOption(interactionType = ModOption.InteractionType.Slider)]
+    [ModOptionCategory("UI", 2)]
+    [ModOptionFloatValues(0f, 1f, 0.05f)]
+    public static float HighlightColorB = 0.95f;
 
     /// <summary> All available quickhacks in the menu. </summary>
     public List<QuickHackInfo> Entries { get; set; } = new List<QuickHackInfo>();
@@ -56,7 +72,7 @@ public class SelectionMenu : MonoBehaviour
         {
             GameObject entry = GameObject.Instantiate(template, transform);
             SetInstanceVisibility(entry, true);
-            entry.transform.localPosition = template.transform.localPosition + Vector3.down * (i * 0.65f);
+            entry.transform.localPosition = template.transform.localPosition + Vector3.down * (i * 1f);
             entry.GetComponent<TextMeshPro>().text = Entries[i].Name;
 
             GameObject icon = entry.transform.Find("Icon").gameObject;
@@ -82,8 +98,10 @@ public class SelectionMenu : MonoBehaviour
         int i = 0;
         foreach (var kvp in entryInstances)
         {
-            var tmp = kvp.Value.GetComponent<TextMeshPro>();
-            tmp.color = (i == SelectedIndex) ? Color.white : Color.gray;
+            var highlight = kvp.Value.transform.Find("BackgroundHighlight").gameObject;
+            highlight.GetComponent<SpriteRenderer>().color = new Color(0.1f, 0.1f, 0.1f);
+            if (i == SelectedIndex)
+                highlight.GetComponent<SpriteRenderer>().color = new Color(HighlightColorR, HighlightColorG, HighlightColorB);
             i++;
         }
     }

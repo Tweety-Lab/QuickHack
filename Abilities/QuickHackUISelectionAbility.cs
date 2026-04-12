@@ -5,6 +5,7 @@ using QuickHack.Components;
 using QuickHack.Hacks;
 using System;
 using System.Collections;
+using ThunderRoad;
 using UnityEngine;
 
 namespace QuickHack.Abilities;
@@ -16,6 +17,7 @@ public class QuickHackUISelectionAbility : Ability
 {
     [Addressable("QuickHack.SelectionScreen")]
     public static GameObject? SelectionScreen { get; set; }
+
 
     /// <inheritdoc/>
     public QuickHackUISelectionAbility(AbilitySpell spell) : base(spell) { }
@@ -54,7 +56,7 @@ public class QuickHackUISelectionAbility : Ability
             {
                 menu.Entries.Add(new SelectionMenu.QuickHackInfo()
                 {
-                    Name = qh.Name,
+                    Name = qh.Name.ToUpper(),
                     IconAddress = qh.Icon,
                 });
             }
@@ -85,15 +87,13 @@ public class QuickHackUISelectionAbility : Ability
 
     private IEnumerator FollowHead(Transform instance, Transform head)
     {
-        float followSpeed = 25f;
-        Vector3 offset = new Vector3(0f, 0f, 2f); // For some reason: Z = forward, Y = Right, X = Up
+        float followSpeed = 50f;
+        Vector3 offset = new Vector3(0f, -0.5f, 2f); // Because of inversion: Z = forward, Y = Right, X = Up
 
         while (true)
         {
             Vector3 targetPosition = head.position + head.TransformDirection(offset);
-            Vector3 targetEuler = head.rotation.eulerAngles;
-            targetEuler.z = 0f;
-            Quaternion targetRotation = Quaternion.Euler(targetEuler);
+            Quaternion targetRotation = Quaternion.LookRotation(targetPosition - head.position);
 
             instance.position = Vector3.Lerp(instance.position, targetPosition, followSpeed * Time.deltaTime);
             instance.rotation = Quaternion.Slerp(instance.rotation, targetRotation, followSpeed * Time.deltaTime);

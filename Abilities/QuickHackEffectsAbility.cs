@@ -19,13 +19,13 @@ public class QuickHackEffectsAbility : Ability
     public Volume PostProcessVolume { get; set; }
 
     [ModOption(interactionType = ModOption.InteractionType.Slider)] [ModOptionCategory("Effects", 2)] [ModOptionFloatValues(0f, 1f, 0.05f)] 
-    public static float HackModeColorR = 0.35f;
+    public static float HackModeColorR = 1f;
 
     [ModOption(interactionType = ModOption.InteractionType.Slider)] [ModOptionCategory("Effects", 2)] [ModOptionFloatValues(0f, 1f, 0.05f)]
-    public static float HackModeColorG = 0.7f;
+    public static float HackModeColorG = 1f;
 
     [ModOption(interactionType = ModOption.InteractionType.Slider)] [ModOptionCategory("Effects", 2)] [ModOptionFloatValues(0f, 1f, 0.05f)]
-    public static float HackModeColorB = 0.35f;
+    public static float HackModeColorB = 1f;
 
     /// <summary> The color to tint the screen when in Hack Mode. </summary>
     public static Color HackModeColor => new Color(HackModeColorR, HackModeColorG, HackModeColorB);
