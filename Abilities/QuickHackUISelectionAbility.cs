@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using ThunderRoad;
 using UnityEngine;
+using static ThunderRoad.BrainModuleStance;
 
 namespace QuickHack.Abilities;
 
@@ -74,10 +75,17 @@ public class QuickHackUISelectionAbility : Ability
         // we can just do it here.
         void OnStop()
         {
+            CoroutineRunner.Instance.StartCoroutine(DeferredCleanup()); // Defer unsubscription to avoid modifying the delegate chain mid enumeration
+        }
+
+        IEnumerator DeferredCleanup()
+        {
+            CoroutineRunner.Instance.StopCoroutine(followCoroutine);
+            yield return null;
+
             logic?.OnQuickHackTargetSelected -= OnTargetSelected;
             logic?.OnQuickHackSelected -= OnQuickHackSelected;
             Spell.OnStopCast -= OnStop;
-            CoroutineRunner.Instance.StopCoroutine(followCoroutine);
             GameObject.Destroy(instance);
         }
 

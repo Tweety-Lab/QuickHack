@@ -49,13 +49,16 @@ public class QuickHackLogicAbility : Ability
         typeof(OverheatQuickHack),
         typeof(ShortCircuitQuickHack),
         typeof(CrippleMovementQuickHack),
-        typeof(CyberpsychosisQuickHack)
+        typeof(CyberpsychosisQuickHack),
+        typeof(MagneticAttractionQuickHack)
     };
-
-    private List<BaseQuickHack> quickHackInstances = new List<BaseQuickHack>();
 
     /// <inheritdoc/>
     public QuickHackLogicAbility(AbilitySpell spell) : base(spell) { }
+
+    private List<BaseQuickHack> quickHackInstances = new List<BaseQuickHack>();
+
+    private bool joystickMoved = false;
 
     /// <inheritdoc/>
     public override void Load()
@@ -119,6 +122,29 @@ public class QuickHackLogicAbility : Ability
         }
 
         // QH Selection Logic
+        Vector2 stick = PlayerControl.GetHand(Side.Left).JoystickAxis;
+        bool up = stick.y > 0.5f;
+        bool down = stick.y < -0.5f;
+
+        if (!up && !down)
+            joystickMoved = false;
+
+        if (AvailableQuickHacks.Count > 0 && Target != null && !joystickMoved)
+        {
+            if (up)
+            {
+                joystickMoved = true;
+                SelectedQuickHackIndex = Mathf.Clamp(SelectedQuickHackIndex - 1, 0, AvailableQuickHacks.Count - 1);
+                OnQuickHackSelected?.Invoke((SelectedQuickHack!, Target));
+            }
+            else if (down)
+            {
+                joystickMoved = true;
+                SelectedQuickHackIndex = Mathf.Clamp(SelectedQuickHackIndex + 1, 0, AvailableQuickHacks.Count - 1);
+                OnQuickHackSelected?.Invoke((SelectedQuickHack!, Target));
+            }
+        }
+
 #if DEBUG
         if (Keyboard.current.wKey.wasPressedThisFrame && AvailableQuickHacks.Count > 0 && Target != null)
         {
