@@ -2,6 +2,8 @@
 using AliLib.Core.Abilities;
 using QuickHack.Abilities;
 using System.Collections.Generic;
+using ThunderRoad;
+using UnityEngine;
 
 namespace QuickHack;
 

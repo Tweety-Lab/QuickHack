@@ -16,7 +16,7 @@ namespace QuickHack.Abilities;
 /// </summary>
 public class QuickHackLogicAbility : Ability
 {
-    [ModOption] [ModOptionCategory("Quick Hack", 1)] [ModOptionFloatValues(0f, 1f, 0.1f)]
+    [ModOption] [ModOptionCategory("Quick Hack", 1)] [ModOptionFloatValues(0.1f, 1f, 0.1f)]
     public static float TimeScale = 0.1f;
 
     /// <summary> Called when a new target is selected. </summary>
@@ -79,6 +79,7 @@ public class QuickHackLogicAbility : Ability
 
         quickHackInstances.Clear();
 
+        Spell.OnStopCast -= StopCast;
         Spell.OnUpdateCast -= UpdateCast;
         Spell.OnStartCast -= StartCast;
 
@@ -164,6 +165,8 @@ public class QuickHackLogicAbility : Ability
 
     public void StartCast() 
     {
+        // Prevent double subscription
+        Spell.OnUpdateCast -= UpdateCast;
         Spell.OnUpdateCast += UpdateCast;
 
         TimeManager.SetTimeScale(TimeScale);
@@ -175,6 +178,7 @@ public class QuickHackLogicAbility : Ability
         Spell.OnUpdateCast -= UpdateCast;
 
         TimeManager.SetTimeScale(1.0f);
+        TimeManager.StopSlowMotion();
 
         if (SelectedQuickHack != null && Target != null)
         {
