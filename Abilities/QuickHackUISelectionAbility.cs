@@ -34,19 +34,17 @@ public class QuickHackUISelectionAbility : Ability
 
     private void OnStartCast()
     {
-        GameObject? instance = GameObject.Instantiate(SelectionScreen);
-        if (instance == null)
+        SmartObject<GameObject> instance = GameObject.Instantiate(SelectionScreen)!;
+        if (instance == null || instance.Object == null)
             return;
 
-        instance.transform.position = Spell.spellCaster.ragdollHand.ragdoll.headPart.transform.position;
+        instance.Object.transform.position = Spell.spellCaster.ragdollHand.ragdoll.headPart.transform.position;
 
         QuickHackLogicAbility? logic = Spell.GetAbility<QuickHackLogicAbility>();
 
-        Spell.OnStopCast += () => GameObject.Destroy(instance);
+        SelectionMenu menu = instance.Object.AddComponent<SelectionMenu>();
 
-        SelectionMenu menu = instance.AddComponent<SelectionMenu>();
-
-        Coroutine followCoroutine = CoroutineRunner.Instance.StartCoroutine(FollowHead(instance.transform, Spell.spellCaster.ragdollHand.ragdoll.headPart.transform));
+        Coroutine followCoroutine = CoroutineRunner.Instance.StartCoroutine(FollowHead(instance.Object.transform, Spell.spellCaster.ragdollHand.ragdoll.headPart.transform));
 
         void OnTargetSelected(GameObject target)
         {
@@ -73,18 +71,19 @@ public class QuickHackUISelectionAbility : Ability
         // we can just do it here.
         void OnStop()
         {
+            CoroutineRunner.Instance.StopCoroutine(followCoroutine);
+
+            logic?.OnQuickHackTargetSelected -= OnTargetSelected;
+            logic?.OnQuickHackSelected -= OnQuickHackSelected;
+
             CoroutineRunner.Instance.StartCoroutine(DeferredCleanup()); // Defer unsubscription to avoid modifying the delegate chain mid enumeration
         }
 
         IEnumerator DeferredCleanup()
         {
-            CoroutineRunner.Instance.StopCoroutine(followCoroutine);
             yield return null;
 
-            logic?.OnQuickHackTargetSelected -= OnTargetSelected;
-            logic?.OnQuickHackSelected -= OnQuickHackSelected;
             Spell.OnStopCast -= OnStop;
-            GameObject.Destroy(instance);
         }
 
         logic?.OnQuickHackTargetSelected += OnTargetSelected;

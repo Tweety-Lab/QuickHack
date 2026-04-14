@@ -28,7 +28,7 @@ public class QuickHackUIIndicatorAbility : Ability
     {
         base.Load();
 
-         Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackUsed += OnQuickHackUsed;
+        Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackUsed += OnQuickHackUsed;
     }
 
     private void OnQuickHackUsed((BaseQuickHack QuickHack, GameObject Target) info) => SpawnQuickHackIcon(info.QuickHack.Icon, info.Target);
@@ -36,11 +36,11 @@ public class QuickHackUIIndicatorAbility : Ability
     public void SpawnQuickHackIcon(string iconAddress, GameObject target)
     {
         GameObject? instance = GameObject.Instantiate(RedBackground);
+        Material? matInstance = null;
 
         if (BaseIconMaterial != null)
         {
-            // TODO: Does this material properly get disposed?
-            Material matInstance = GameObject.Instantiate(BaseIconMaterial);
+            matInstance = GameObject.Instantiate(BaseIconMaterial);
 
             matInstance.SetColor("_Tint", new Color(1.0f, 0.3725f, 0.3725f));
             instance?.transform.Find("Icon").GetComponent<MeshRenderer>().material = matInstance;
@@ -54,7 +54,12 @@ public class QuickHackUIIndicatorAbility : Ability
         else
             CoroutineRunner.Instance.StartCoroutine(FollowPosition(instance!.transform, target.transform));
 
-        CoroutineRunner.Instance.PlayAfterDelay(() => GameObject.Destroy(instance), 3f);
+        CoroutineRunner.Instance.PlayAfterDelay(() =>
+        {
+            Catalog.ReleaseAsset(matInstance?.GetTexture("_Sprite"));
+            GameObject.Destroy(instance);
+            Object.Destroy(matInstance);
+        }, 3f);
     }
 
     private IEnumerator FollowPosition(Transform follower, Transform target, Vector3 localOffset = default)

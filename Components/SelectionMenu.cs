@@ -3,6 +3,7 @@ using UnityEngine;
 using TMPro;
 using ThunderRoad;
 using QuickHack.Abilities;
+using AliLib.Core.GC;
 
 namespace QuickHack.Components;
 
@@ -75,12 +76,17 @@ public class SelectionMenu : MonoBehaviour
             entry.transform.localPosition = template.transform.localPosition + Vector3.down * (i * 1f);
             entry.GetComponent<TextMeshPro>().text = Entries[i].Name;
 
-            GameObject icon = entry.transform.Find("Icon").gameObject;
+            GameObject? icon = entry.transform.Find("Icon").gameObject;
             Catalog.LoadAssetAsync<Texture2D>(Entries[i].IconAddress, (texture) =>
             {
-                MeshRenderer renderer = icon?.GetComponent<MeshRenderer>();
-                if (renderer == null) return;
-                renderer.material.mainTexture = texture;
+                MeshRenderer? renderer = icon?.GetComponent<MeshRenderer>();
+                if (renderer == null)
+                    return;
+
+                SmartObject<Material> mat = renderer.material;
+                mat.OnDisposed += () => Catalog.ReleaseAsset(texture);
+
+                mat.Object?.mainTexture = texture;
             }, "QuickHack");
 
             entryInstances.Add(Entries[i], entry);
