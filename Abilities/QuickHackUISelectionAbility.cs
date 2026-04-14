@@ -19,6 +19,7 @@ public class QuickHackUISelectionAbility : Ability
     [Addressable("QuickHack.SelectionScreen")]
     public static GameObject? SelectionScreen { get; set; }
 
+    private Coroutine? followCoroutine;
 
     /// <inheritdoc/>
     public QuickHackUISelectionAbility(AbilitySpell spell) : base(spell) { }
@@ -30,6 +31,17 @@ public class QuickHackUISelectionAbility : Ability
         base.Load();
 
         Spell.OnStartCast += OnStartCast;
+    }
+
+    /// <inheritdoc/>
+    public override void Unload()
+    {
+        base.Unload();
+
+        base.Unload();
+        Spell.OnStartCast -= OnStartCast;
+        if (followCoroutine != null)
+            CoroutineRunner.Instance.StopCoroutine(followCoroutine);
     }
 
     private void OnStartCast()
@@ -44,7 +56,7 @@ public class QuickHackUISelectionAbility : Ability
 
         SelectionMenu menu = instance.Object.AddComponent<SelectionMenu>();
 
-        Coroutine followCoroutine = CoroutineRunner.Instance.StartCoroutine(FollowHead(instance.Object.transform, Spell.spellCaster.ragdollHand.ragdoll.headPart.transform));
+        followCoroutine = CoroutineRunner.Instance.StartCoroutine(FollowHead(instance.Object.transform, Spell.spellCaster.ragdollHand.ragdoll.headPart.transform));
 
         void OnTargetSelected(GameObject target)
         {
@@ -96,7 +108,7 @@ public class QuickHackUISelectionAbility : Ability
         float followSpeed = 50f;
         Vector3 offset = new Vector3(0f, -0.5f, 2f); // Because of inversion: Z = forward, Y = Right, X = Up
 
-        while (true)
+        while (instance != null && head != null)
         {
             Vector3 targetPosition = head.position + head.TransformDirection(offset);
             Quaternion targetRotation = Quaternion.LookRotation(targetPosition - head.position);

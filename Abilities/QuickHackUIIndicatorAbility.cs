@@ -31,6 +31,14 @@ public class QuickHackUIIndicatorAbility : Ability
         Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackUsed += OnQuickHackUsed;
     }
 
+    /// <inheritdoc/>
+    public override void Unload()
+    {
+        base.Unload();
+
+        Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackUsed -= OnQuickHackUsed;
+    }
+
     private void OnQuickHackUsed((BaseQuickHack QuickHack, GameObject Target) info) => SpawnQuickHackIcon(info.QuickHack.Icon, info.Target);
 
     public void SpawnQuickHackIcon(string iconAddress, GameObject target)
