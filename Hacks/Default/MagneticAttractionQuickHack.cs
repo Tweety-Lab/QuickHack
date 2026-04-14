@@ -19,6 +19,6 @@ public class MagneticAttractionQuickHack : ComponentQuickHack<Item>
         if (target.IsHeld())
             target.ForceUngrabAll();
 
-        target.physicBody.AddForce((Player.local.creature.ragdoll.GetPart(RagdollPart.Type.Neck).transform.position - target.transform.position).normalized * 20f, UnityEngine.ForceMode.Impulse);
+        target.physicBody.AddForce((Player.local.creature.ragdoll.GetPart(RagdollPart.Type.Neck).transform.position - target.transform.position).normalized * target.physicBody.mass * 10f, UnityEngine.ForceMode.Impulse);
     }
 }

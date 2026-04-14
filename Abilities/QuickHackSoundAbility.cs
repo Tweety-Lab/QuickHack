@@ -54,25 +54,25 @@ public class QuickHackSoundAbility : Ability
 
         Spell.OnStartCast += () =>
         {
-            // We use ambient to avoid the slow-mo effects being applied to our audio
+            // We use AudioMixerName.UI to avoid the slow-mo effects being applied to our audio
             if (StartSound != null)
-                Audio.PlayNoBlend(StartSound, AudioMixerName.Ambient, StartSoundVolume);
+                Audio.PlayNoBlend(StartSound, AudioMixerName.UI, StartSoundVolume);
 
-            if (BackgroundSound != null)
+            if (BackgroundSound == null)
+                return;
+
+            AudioSource? background = Audio.PlayNoBlend(BackgroundSound, AudioMixerName.UI, BackgroundMusicVolume);
+            Spell.OnStopCast += () =>
             {
-                AudioSource? background = Audio.PlayNoBlend(BackgroundSound, AudioMixerName.Ambient, BackgroundMusicVolume);
-                Spell.OnStopCast += () =>
-                {
-                    if (background != null)
-                        CoroutineRunner.Instance.StartCoroutine(Audio.FadeOut(background, 1f));
-                };
-            }
+                if (background != null)
+                    CoroutineRunner.Instance.StartCoroutine(Audio.FadeOut(background, 1f));
+            };
         };
 
         Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackSelected += (info) =>
         {
             if (SelectSound != null)
-                Audio.PlayNoBlend(SelectSound, AudioMixerName.Ambient, SelectSoundVolume);
+                Audio.PlayNoBlend(SelectSound, AudioMixerName.UI, SelectSoundVolume);
         };
 
         Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackUsed += (info) =>
