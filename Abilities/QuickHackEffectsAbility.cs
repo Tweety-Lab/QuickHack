@@ -105,7 +105,11 @@ public class QuickHackEffectsAbility : Ability
         foreach (Renderer r in scannedRenderers)
         {
             if (r == null) continue;
-            Material[] mats = r.materials;
+
+            Material[] mats = r.sharedMaterials;
+            if (mats.Length == 0)
+                continue;
+
             Material[] newMats = new Material[mats.Length - 1];
             System.Array.Copy(mats, newMats, newMats.Length);
             r.materials = newMats;

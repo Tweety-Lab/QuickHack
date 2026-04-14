@@ -79,13 +79,21 @@ public class SelectionMenu : MonoBehaviour
             GameObject? icon = entry.transform.Find("Icon").gameObject;
             Catalog.LoadAssetAsync<Texture2D>(Entries[i].IconAddress, (texture) =>
             {
-                MeshRenderer? renderer = icon?.GetComponent<MeshRenderer>();
-                if (renderer == null)
+                if (icon == null)
+                {
+                    Catalog.ReleaseAsset(texture);
                     return;
+                }
+
+                MeshRenderer? renderer = icon.GetComponent<MeshRenderer>();
+                if (renderer == null)
+                {
+                    Catalog.ReleaseAsset(texture);
+                    return;
+                }
 
                 SmartObject<Material> mat = renderer.material;
                 mat.OnDisposed += () => Catalog.ReleaseAsset(texture);
-
                 mat.Object?.mainTexture = texture;
             }, "QuickHack");
 
