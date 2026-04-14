@@ -44,7 +44,7 @@ public class QuickHackSoundAbility : Ability
                 Spell.OnStopCast += () =>
                 {
                     if (background != null)
-                        Audio.Stop(background);
+                        CoroutineRunner.Instance.StartCoroutine(Audio.FadeOut(background, 1f));
                 };
             }
         };
