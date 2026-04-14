@@ -27,6 +27,11 @@ public class QuickHackSoundAbility : Ability
     [ModOptionFloatValues(0f, 1f, 0.1f)]
     public static float BackgroundMusicVolume = 0.5f;
 
+    [ModOption(interactionType = ModOption.InteractionType.Slider)]
+    [ModOptionCategory("Sound", 3)]
+    [ModOptionFloatValues(0f, 1f, 0.1f)]
+    public static float SelectSoundVolume = 0.8f;
+
     [Addressable("QuickHack.Sounds.Use")]
     public static AudioClip? UseSound { get; set; }
 
@@ -35,6 +40,9 @@ public class QuickHackSoundAbility : Ability
 
     [Addressable("QuickHack.Sounds.Background")]
     public static AudioClip? BackgroundSound { get; set; }
+
+    [Addressable("QuickHack.Sounds.Select")]
+    public static AudioClip? SelectSound { get; set; }
 
     /// <inheritdoc/>
     public QuickHackSoundAbility(AbilitySpell spell) : base(spell) { }
@@ -61,13 +69,17 @@ public class QuickHackSoundAbility : Ability
             }
         };
 
+        Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackSelected += (info) =>
+        {
+            if (SelectSound != null)
+                Audio.PlayNoBlend(SelectSound, AudioMixerName.Ambient, SelectSoundVolume);
+        };
+
         Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackUsed += (info) =>
         {
             // This isnt AI guys its just best practice to always assume an [Addressable] can be null !!
-            if (UseSound == null)
-                return;
-
-            Audio.PlayNoBlend(UseSound, AudioMixerName.Effect, UseSoundVolume);
+            if (UseSound != null)
+                Audio.PlayNoBlend(UseSound, AudioMixerName.Effect, UseSoundVolume);
         };
     }
 }
