@@ -1,9 +1,11 @@
 ﻿
+using AliLib.Core;
 using AliLib.Core.Abilities;
 using AliLib.Core.Assets;
-using AliLib.Core;
-using UnityEngine;
+using QuickHack.Hacks;
 using ThunderRoad;
+using UnityEngine;
+using static QuickHack.Components.SelectionMenu;
 
 namespace QuickHack.Abilities;
 
@@ -44,6 +46,8 @@ public class QuickHackSoundAbility : Ability
     [Addressable("QuickHack.Sounds.Select")]
     public static AudioClip? SelectSound { get; set; }
 
+    private AudioSource? backgroundSource;
+
     /// <inheritdoc/>
     public QuickHackSoundAbility(AbilitySpell spell) : base(spell) { }
 
@@ -52,34 +56,53 @@ public class QuickHackSoundAbility : Ability
     {
         base.Load();
 
-        Spell.OnStartCast += () =>
-        {
-            // We use AudioMixerName.UI to avoid the slow-mo effects being applied to our audio
-            if (StartSound != null)
-                Audio.PlayNoBlend(StartSound, AudioMixerName.UI, StartSoundVolume);
+        Spell.OnStartCast += OnStartCast;
+        Spell.OnStopCast += OnStopCast;
 
-            if (BackgroundSound == null)
-                return;
+        var logic = Spell.GetAbility<QuickHackLogicAbility>();
+        logic?.OnQuickHackSelected += OnQuickHackSelected;
+        logic?.OnQuickHackUsed += OnQuickHackUsed;
+    }
 
-            AudioSource? background = Audio.PlayNoBlend(BackgroundSound, AudioMixerName.UI, BackgroundMusicVolume);
-            Spell.OnStopCast += () =>
-            {
-                if (background != null)
-                    CoroutineRunner.Instance.StartCoroutine(Audio.FadeOut(background, 1f));
-            };
-        };
+    /// <inheritdoc/>
+    public override void Unload()
+    {
+        base.Unload();
 
-        Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackSelected += (info) =>
-        {
-            if (SelectSound != null)
-                Audio.PlayNoBlend(SelectSound, AudioMixerName.UI, SelectSoundVolume);
-        };
+        Spell.OnStartCast -= OnStartCast;
+        Spell.OnStopCast -= OnStopCast;
 
-        Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackUsed += (info) =>
-        {
-            // This isnt AI guys its just best practice to always assume an [Addressable] can be null !!
-            if (UseSound != null)
-                Audio.PlayNoBlend(UseSound, AudioMixerName.Effect, UseSoundVolume);
-        };
+        var logic = Spell.GetAbility<QuickHackLogicAbility>();
+        logic?.OnQuickHackSelected -= OnQuickHackSelected;
+        logic?.OnQuickHackUsed -= OnQuickHackUsed;
+    }
+
+    private void OnStartCast()
+    {
+        // We use AudioMixerName.UI to avoid the slow-mo effects being applied to our audio
+        if (StartSound != null)
+            Audio.PlayNoBlend(StartSound, AudioMixerName.UI, StartSoundVolume);
+
+        if (BackgroundSound != null)
+            backgroundSource = Audio.PlayNoBlend(BackgroundSound, AudioMixerName.UI, BackgroundMusicVolume);
+    }
+
+    private void OnStopCast()
+    {
+        if (backgroundSource != null)
+            CoroutineRunner.Instance.StartCoroutine(Audio.FadeOut(backgroundSource, 1f));
+    }
+
+    private void OnQuickHackSelected((BaseQuickHack QuickHack, GameObject Target) info)
+    {
+        if (SelectSound != null)
+            Audio.PlayNoBlend(SelectSound, AudioMixerName.UI, SelectSoundVolume);
+    }
+
+    private void OnQuickHackUsed((BaseQuickHack QuickHack, GameObject Target) info)
+    {
+        // This isnt AI guys its just best practice to always assume an [Addressable] can be null !!
+        if (UseSound != null)
+            Audio.PlayNoBlend(UseSound, AudioMixerName.Effect, UseSoundVolume);
     }
 }
