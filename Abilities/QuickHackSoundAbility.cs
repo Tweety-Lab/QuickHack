@@ -20,10 +20,18 @@ public class QuickHackSoundAbility : Ability
     [ModOption(interactionType = ModOption.InteractionType.Slider)]
     [ModOptionCategory("Sound", 3)]
     [ModOptionFloatValues(0f, 1f, 0.1f)]
+    public static float StartSoundVolume = 0.3f;
+
+    [ModOption(interactionType = ModOption.InteractionType.Slider)]
+    [ModOptionCategory("Sound", 3)]
+    [ModOptionFloatValues(0f, 1f, 0.1f)]
     public static float BackgroundMusicVolume = 0.5f;
 
     [Addressable("QuickHack.Sounds.Use")]
     public static AudioClip? UseSound { get; set; }
+
+    [Addressable("QuickHack.Sounds.Start")]
+    public static AudioClip? StartSound { get; set; }
 
     [Addressable("QuickHack.Sounds.Background")]
     public static AudioClip? BackgroundSound { get; set; }
@@ -38,9 +46,13 @@ public class QuickHackSoundAbility : Ability
 
         Spell.OnStartCast += () =>
         {
+            // We use ambient to avoid the slow-mo effects being applied to our audio
+            if (StartSound != null)
+                Audio.PlayNoBlend(StartSound, AudioMixerName.Ambient, StartSoundVolume);
+
             if (BackgroundSound != null)
             {
-                AudioSource? background = Audio.PlayNoBlend(BackgroundSound, ThunderRoad.AudioMixerName.Ambient, BackgroundMusicVolume);
+                AudioSource? background = Audio.PlayNoBlend(BackgroundSound, AudioMixerName.Ambient, BackgroundMusicVolume);
                 Spell.OnStopCast += () =>
                 {
                     if (background != null)
@@ -55,7 +67,7 @@ public class QuickHackSoundAbility : Ability
             if (UseSound == null)
                 return;
 
-            Audio.PlayNoBlend(UseSound, ThunderRoad.AudioMixerName.Effect, UseSoundVolume);
+            Audio.PlayNoBlend(UseSound, AudioMixerName.Effect, UseSoundVolume);
         };
     }
 }
