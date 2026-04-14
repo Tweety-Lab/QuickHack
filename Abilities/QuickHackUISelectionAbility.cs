@@ -1,13 +1,13 @@
 ﻿using AliLib.Core;
 using AliLib.Core.Abilities;
 using AliLib.Core.Assets;
+using AliLib.Core.GC;
 using QuickHack.Components;
 using QuickHack.Hacks;
 using System;
 using System.Collections;
 using ThunderRoad;
 using UnityEngine;
-using static ThunderRoad.BrainModuleStance;
 
 namespace QuickHack.Abilities;
 
@@ -37,8 +37,6 @@ public class QuickHackUISelectionAbility : Ability
         GameObject? instance = GameObject.Instantiate(SelectionScreen);
         if (instance == null)
             return;
-
-        instance.layer = (int)ThunderRoad.LayerName.UI;
 
         instance.transform.position = Spell.spellCaster.ragdollHand.ragdoll.headPart.transform.position;
 
