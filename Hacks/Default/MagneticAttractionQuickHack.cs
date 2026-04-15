@@ -1,4 +1,6 @@
-﻿using ThunderRoad;
+﻿using AliLib.Core;
+using ThunderRoad;
+using UnityEngine;
 
 namespace QuickHack.Hacks.Default;
 
@@ -19,6 +21,9 @@ public class MagneticAttractionQuickHack : ComponentQuickHack<Item>
         if (target.IsHeld())
             target.ForceUngrabAll();
 
-        target.physicBody.AddForce((Player.local.creature.ragdoll.GetPart(RagdollPart.Type.Neck).transform.position - target.transform.position).normalized * target.physicBody.mass * 10f, UnityEngine.ForceMode.Impulse);
+        CoroutineRunner.Instance.PlaySmooth((t) =>
+        {
+            target.physicBody.AddForce((Player.local.creature.ragdoll.GetPart(RagdollPart.Type.Neck).transform.position - target.transform.position).normalized * target.physicBody.mass * 0.01f * t, UnityEngine.ForceMode.Impulse);
+        }, 3f, curve: new AnimationCurve(new Keyframe(0f, 0f, 0f, 40f), new Keyframe(1f, 1f, 0.5f, 0f)));
     }
 }
