@@ -36,6 +36,8 @@ public class QuickHackEffectsAbility : Ability
     public QuickHackEffectsAbility(AbilitySpell spell) : base(spell) { }
 
     private List<Renderer> scannedRenderers = new List<Renderer>();
+    private Coroutine? hackTintCoroutine;
+    private Coroutine? hackTintUndoCoroutine;
 
     /// <inheritdoc/>
     public override void OnEquip()
@@ -69,10 +71,10 @@ public class QuickHackEffectsAbility : Ability
 
         colorAdjustments.colorFilter.overrideState = true;
 
-        CoroutineRunner.Instance.PlaySmooth(
-            t => colorAdjustments.colorFilter.Override(Color.Lerp(Color.white, HackModeColor, t)),
-            duration: 0.25f * QuickHackLogicAbility.TimeScale
-        );
+        if (hackTintUndoCoroutine != null)
+            CoroutineRunner.Instance.StopCoroutine(hackTintUndoCoroutine);
+            
+        hackTintCoroutine = CoroutineRunner.Instance.PlaySmooth(t => colorAdjustments.colorFilter.Override(Color.Lerp(Color.white, HackModeColor, t)), duration: 0.25f * QuickHackLogicAbility.TimeScale);
 
         Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackTargetSelected += OnQuickHackTargetSelected;
     }
@@ -81,11 +83,13 @@ public class QuickHackEffectsAbility : Ability
     {
         ClearScannedOverlay();
 
-        // TODO: AliLib needs a way of stopping specific coroutines
         if (PostProcessVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
         {
+            if (hackTintCoroutine != null)
+                CoroutineRunner.Instance.StopCoroutine(hackTintCoroutine);
+
             Color from = colorAdjustments.colorFilter.value;
-            CoroutineRunner.Instance.PlaySmooth(t => colorAdjustments.colorFilter.Override(Color.Lerp(from, Color.white, t)), duration: 0.25f);
+            hackTintUndoCoroutine = CoroutineRunner.Instance.PlaySmooth(t => colorAdjustments.colorFilter.Override(Color.Lerp(from, Color.white, t)), duration: 0.25f);
         }
 
         Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackTargetSelected -= OnQuickHackTargetSelected;
