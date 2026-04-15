@@ -64,11 +64,15 @@ public class QuickHackEffectsAbility : Ability
 
     public void StartCast()
     {
-        if (PostProcessVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
-        {
-            colorAdjustments.colorFilter.overrideState = true;
-            CoroutineRunner.Instance.PlaySmooth(t => colorAdjustments.colorFilter.Override(Color.Lerp(Color.white, HackModeColor, t)), duration: 0.25f * QuickHackLogicAbility.TimeScale);
-        }
+        if (!PostProcessVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
+            colorAdjustments = PostProcessVolume.profile.Add<ColorAdjustments>(true);
+
+        colorAdjustments.colorFilter.overrideState = true;
+
+        CoroutineRunner.Instance.PlaySmooth(
+            t => colorAdjustments.colorFilter.Override(Color.Lerp(Color.white, HackModeColor, t)),
+            duration: 0.25f * QuickHackLogicAbility.TimeScale
+        );
 
         Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackTargetSelected += OnQuickHackTargetSelected;
     }

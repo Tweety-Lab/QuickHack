@@ -54,7 +54,7 @@ public class QuickHackUISelectionAbility : Ability
 
         SelectionMenu menu = instance.Object.AddComponent<SelectionMenu>();
 
-        followCoroutine = CoroutineRunner.Instance.StartCoroutine(FollowHead(instance.Object.transform, Spell.spellCaster.ragdollHand.ragdoll.headPart.transform));
+        followCoroutine = CoroutineRunner.Instance.StartCoroutine(FollowHead(instance.Object.transform, Spell.spellCaster.ragdollHand.creature.player.head.transform));
 
         void OnTargetSelected(GameObject target)
         {
@@ -103,12 +103,12 @@ public class QuickHackUISelectionAbility : Ability
 
     private IEnumerator FollowHead(Transform instance, Transform head)
     {
-        float followSpeed = 50f;
-        Vector3 offset = new Vector3(0f, -0.5f, 2f); // Because of inversion: Z = forward, Y = Right, X = Up
+        float followSpeed = 20f;
+        Vector3 offset = new Vector3(-1f, 0.5f, 2f);
 
         while (instance != null && head != null)
         {
-            Vector3 targetPosition = head.position + head.TransformDirection(offset);
+            Vector3 targetPosition = head.position + head.rotation * offset;
             Quaternion targetRotation = Quaternion.LookRotation(targetPosition - head.position);
 
             instance.position = Vector3.Lerp(instance.position, targetPosition, followSpeed * Time.deltaTime);
