@@ -59,7 +59,6 @@ public class QuickHackLogicAbility : Ability
     private List<BaseQuickHack> quickHackInstances = new List<BaseQuickHack>();
 
     private bool joystickMoved = false;
-    private bool updateCastRan = false;
 
     /// <inheritdoc/>
     public override void Init()
@@ -83,16 +82,6 @@ public class QuickHackLogicAbility : Ability
 
     public void UpdateCast()
     {
-        // HACK: AliLib 0.4.0 seems to make UpdateCast run twice
-        // Find out why and remove this!
-        if (updateCastRan)
-        {
-            updateCastRan = false;
-            return;
-        }
-
-        updateCastRan = true;
-
         // Target Logic
         Vector3 forward = Spell.spellCaster.ragdollHand.ragdoll.headPart.transform.forward;
         Vector3 origin = Spell.spellCaster.ragdollHand.ragdoll.headPart.transform.position + forward * 0.5f;
