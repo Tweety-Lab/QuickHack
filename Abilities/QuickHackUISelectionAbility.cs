@@ -104,7 +104,7 @@ public class QuickHackUISelectionAbility : Ability
     private IEnumerator FollowHead(Transform instance, Transform head)
     {
         float followSpeed = 20f;
-        Vector3 offset = new Vector3(-1f, 0.5f, 2f);
+        Vector3 offset = new Vector3(-0.5f, 0.5f, 2f);
 
         while (instance != null && head != null)
         {
