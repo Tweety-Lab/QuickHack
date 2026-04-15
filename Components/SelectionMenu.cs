@@ -4,6 +4,7 @@ using TMPro;
 using ThunderRoad;
 using QuickHack.Abilities;
 using AliLib.Core.GC;
+using AliLib.Core.Assets;
 
 namespace QuickHack.Components;
 
@@ -77,25 +78,18 @@ public class SelectionMenu : MonoBehaviour
             entry.GetComponent<TextMeshPro>().text = Entries[i].Name;
 
             GameObject? icon = entry.transform.Find("Icon").gameObject;
-            Catalog.LoadAssetAsync<Texture2D>(Entries[i].IconAddress, (texture) =>
+            AddressableLibrary.LoadCachedAssetAsync<Texture2D>(Entries[i].IconAddress, (texture) =>
             {
                 if (icon == null)
-                {
-                    Catalog.ReleaseAsset(texture);
                     return;
-                }
 
                 MeshRenderer? renderer = icon.GetComponent<MeshRenderer>();
                 if (renderer == null)
-                {
-                    Catalog.ReleaseAsset(texture);
                     return;
-                }
 
                 SmartObject<Material> mat = renderer.material;
-                mat.OnDisposed += () => Catalog.ReleaseAsset(texture);
                 mat.Object?.mainTexture = texture;
-            }, "QuickHack");
+            });
 
             entryInstances.Add(Entries[i], entry);
         }

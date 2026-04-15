@@ -44,7 +44,7 @@ public class QuickHackUIIndicatorAbility : Ability
             matInstance.SetColor("_Tint", new Color(1.0f, 0.3725f, 0.3725f));
             instance?.transform.Find("Icon").GetComponent<MeshRenderer>().material = matInstance;
 
-            Catalog.LoadAssetAsync<Texture2D>(iconAddress, (text) => matInstance.SetTexture("_Sprite", text), "QuickHack");
+            AddressableLibrary.LoadCachedAssetAsync<Texture2D>(iconAddress, (text) => matInstance.SetTexture("_Sprite", text));
         }
 
         // HACK: Ideally our billboard shader would handle rotation but since it doesn't we use a coroutine for positions instead of parenting
@@ -55,7 +55,6 @@ public class QuickHackUIIndicatorAbility : Ability
 
         CoroutineRunner.Instance.PlayAfterDelay(() =>
         {
-            Catalog.ReleaseAsset(matInstance?.GetTexture("_Sprite"));
             GameObject.Destroy(instance);
             Object.Destroy(matInstance);
         }, 3f);
