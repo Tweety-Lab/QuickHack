@@ -18,13 +18,13 @@ public class QuickHackEffectsAbility : Ability
     public Volume PostProcessVolume { get; set; }
 
     [ModOption(interactionType = ModOption.InteractionType.Slider)] [ModOptionCategory("Effects", 2)] [ModOptionFloatValues(0f, 1f, 0.05f)] 
-    public static float HackModeColorR = 1f;
+    public static float HackModeColorR = 0.55f;
 
     [ModOption(interactionType = ModOption.InteractionType.Slider)] [ModOptionCategory("Effects", 2)] [ModOptionFloatValues(0f, 1f, 0.05f)]
     public static float HackModeColorG = 1f;
 
     [ModOption(interactionType = ModOption.InteractionType.Slider)] [ModOptionCategory("Effects", 2)] [ModOptionFloatValues(0f, 1f, 0.05f)]
-    public static float HackModeColorB = 1f;
+    public static float HackModeColorB = 0.8f;
 
     [Addressable("QuickHack.ScannedObjectMat")]
     public static Material? ScannedObjectMaterial { get; set; }
@@ -38,23 +38,26 @@ public class QuickHackEffectsAbility : Ability
     private List<Renderer> scannedRenderers = new List<Renderer>();
 
     /// <inheritdoc/>
-    public override void Load()
+    public override void OnEquip()
     {
-        base.Load();
+        base.OnEquip();
 
         PostProcessVolume = GameObject.FindAnyObjectByType<Volume>();
+    }
+    
+    /// <inheritdoc/>
+    public override void Init()
+    {
+        base.Init();
 
         Spell.OnStartCast += StartCast;
         Spell.OnStopCast += StopCast;
     }
 
     /// <inheritdoc/>
-    public override void Unload()
+    public override void OnUnequip()
     {
-        base.Unload();
-
-        Spell.OnStartCast -= StartCast;
-        Spell.OnStopCast -= StopCast;
+        base.OnUnequip();
 
         StopCast();
     }
@@ -62,7 +65,10 @@ public class QuickHackEffectsAbility : Ability
     public void StartCast()
     {
         if (PostProcessVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
+        {
+            colorAdjustments.colorFilter.overrideState = true;
             CoroutineRunner.Instance.PlaySmooth(t => colorAdjustments.colorFilter.Override(Color.Lerp(Color.white, HackModeColor, t)), duration: 0.25f * QuickHackLogicAbility.TimeScale);
+        }
 
         Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackTargetSelected += OnQuickHackTargetSelected;
     }

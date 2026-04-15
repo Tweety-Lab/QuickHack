@@ -26,20 +26,18 @@ public class QuickHackUISelectionAbility : Ability
 
 
     /// <inheritdoc/>
-    public override void Load()
+    public override void Init()
     {
-        base.Load();
+        base.Init();
 
         Spell.OnStartCast += OnStartCast;
     }
 
     /// <inheritdoc/>
-    public override void Unload()
+    public override void OnUnequip()
     {
-        base.Unload();
+        base.OnUnequip();
 
-        base.Unload();
-        Spell.OnStartCast -= OnStartCast;
         if (followCoroutine != null)
             CoroutineRunner.Instance.StopCoroutine(followCoroutine);
     }

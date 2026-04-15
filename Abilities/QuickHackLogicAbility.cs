@@ -59,11 +59,12 @@ public class QuickHackLogicAbility : Ability
     private List<BaseQuickHack> quickHackInstances = new List<BaseQuickHack>();
 
     private bool joystickMoved = false;
+    private bool updateCastRan = false;
 
     /// <inheritdoc/>
-    public override void Load()
+    public override void Init()
     {
-        base.Load();
+        base.Init();
 
         foreach (Type type in RegisteredQuickHackTypes)
             quickHackInstances.Add((BaseQuickHack)Activator.CreateInstance(type)!);
@@ -73,21 +74,25 @@ public class QuickHackLogicAbility : Ability
     }
 
     /// <inheritdoc/>
-    public override void Unload()
+    public override void OnUnequip()
     {
-        base.Unload();
-
-        quickHackInstances.Clear();
-
-        Spell.OnStopCast -= StopCast;
-        Spell.OnUpdateCast -= UpdateCast;
-        Spell.OnStartCast -= StartCast;
+        base.OnUnequip();
 
         StopCast();
     }
 
     public void UpdateCast()
     {
+        // HACK: AliLib 0.4.0 seems to make UpdateCast run twice
+        // Find out why and remove this!
+        if (updateCastRan)
+        {
+            updateCastRan = false;
+            return;
+        }
+
+        updateCastRan = true;
+
         // Target Logic
         Vector3 forward = Spell.spellCaster.ragdollHand.ragdoll.headPart.transform.forward;
         Vector3 origin = Spell.spellCaster.ragdollHand.ragdoll.headPart.transform.position + forward * 0.5f;
@@ -95,7 +100,6 @@ public class QuickHackLogicAbility : Ability
         Ray ray = new Ray(origin, forward);
         if (Physics.Raycast(ray, out RaycastHit hit, 100f))
         {
-            // HACK: We need to support more than just Item and Creature
             GameObject logicalTarget = ResolveLogicalTarget(hit.collider.gameObject);
 
             // We cant invert this check because we need to play logic later (and returning wont allow us to do so)
@@ -165,8 +169,6 @@ public class QuickHackLogicAbility : Ability
 
     public void StartCast() 
     {
-        // Prevent double subscription
-        Spell.OnUpdateCast -= UpdateCast;
         Spell.OnUpdateCast += UpdateCast;
 
         TimeManager.SetTimeScale(TimeScale);

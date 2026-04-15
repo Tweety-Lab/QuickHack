@@ -22,21 +22,12 @@ public class QuickHackUIIndicatorAbility : Ability
     /// <inheritdoc/>
     public QuickHackUIIndicatorAbility(AbilitySpell spell) : base(spell) { }
 
-
     /// <inheritdoc/>
-    public override void Load()
+    public override void Init()
     {
-        base.Load();
+        base.Init();
 
         Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackUsed += OnQuickHackUsed;
-    }
-
-    /// <inheritdoc/>
-    public override void Unload()
-    {
-        base.Unload();
-
-        Spell.GetAbility<QuickHackLogicAbility>()?.OnQuickHackUsed -= OnQuickHackUsed;
     }
 
     private void OnQuickHackUsed((BaseQuickHack QuickHack, GameObject Target) info) => SpawnQuickHackIcon(info.QuickHack.Icon, info.Target);

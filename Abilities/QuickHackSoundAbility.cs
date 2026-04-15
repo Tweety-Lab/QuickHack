@@ -52,9 +52,9 @@ public class QuickHackSoundAbility : Ability
     public QuickHackSoundAbility(AbilitySpell spell) : base(spell) { }
 
     /// <inheritdoc/>
-    public override void Load()
+    public override void Init()
     {
-        base.Load();
+        base.Init();
 
         Spell.OnStartCast += OnStartCast;
         Spell.OnStopCast += OnStopCast;
@@ -62,19 +62,6 @@ public class QuickHackSoundAbility : Ability
         var logic = Spell.GetAbility<QuickHackLogicAbility>();
         logic?.OnQuickHackSelected += OnQuickHackSelected;
         logic?.OnQuickHackUsed += OnQuickHackUsed;
-    }
-
-    /// <inheritdoc/>
-    public override void Unload()
-    {
-        base.Unload();
-
-        Spell.OnStartCast -= OnStartCast;
-        Spell.OnStopCast -= OnStopCast;
-
-        var logic = Spell.GetAbility<QuickHackLogicAbility>();
-        logic?.OnQuickHackSelected -= OnQuickHackSelected;
-        logic?.OnQuickHackUsed -= OnQuickHackUsed;
     }
 
     private void OnStartCast()
