@@ -89,7 +89,11 @@ public class QuickHackLogicAbility : Ability
         Ray ray = new Ray(origin, forward);
         if (Physics.Raycast(ray, out RaycastHit hit, 100f))
         {
-            GameObject logicalTarget = ResolveLogicalTarget(hit.collider.gameObject);
+            Transform root = hit.collider.transform.root;
+
+            GameObject? logicalTarget = ResolveLogicalTarget(hit.collider.gameObject);
+            if (logicalTarget == null)
+                return;
 
             // We cant invert this check because we need to play logic later (and returning wont allow us to do so)
             if (logicalTarget != Target)
@@ -154,7 +158,18 @@ public class QuickHackLogicAbility : Ability
 #endif
     }
 
-    private GameObject ResolveLogicalTarget(GameObject hit) => hit.GetComponentInParent<Item>()?.gameObject ?? hit.GetComponentInParent<Creature>()?.gameObject ?? hit;
+    private GameObject? ResolveLogicalTarget(GameObject hit)
+    {
+        var item = hit.GetComponentInParent<Item>();
+        if (item != null && item.isPooled == false)
+            return item.gameObject;
+
+        var creature = hit.GetComponentInParent<Creature>();
+        if (creature != null)
+            return creature.gameObject;
+
+        return hit;
+    }
 
     public void StartCast() 
     {
