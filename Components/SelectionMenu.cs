@@ -78,7 +78,7 @@ public class SelectionMenu : MonoBehaviour
             entry.GetComponent<TextMeshPro>().text = Entries[i].Name;
 
             GameObject? icon = entry.transform.Find("Icon").gameObject;
-            AddressableLibrary.LoadCachedAssetAsync<Texture2D>(Entries[i].IconAddress, (texture) =>
+            Catalog.LoadCachedAssetAsync<Texture2D>(Entries[i].IconAddress, (texture) =>
             {
                 if (icon == null)
                     return;
